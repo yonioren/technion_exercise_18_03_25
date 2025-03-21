@@ -22,7 +22,7 @@ def get_valid_option(options, prompt):
 def get_valid_float(prompt):
     while True:
         try:
-            if prompt:
+            if prompt and not prompt.strip()[-1] == ":":
                 prompt=prompt.strip()+": "
             value = float(input(prompt))
 
@@ -33,8 +33,10 @@ def get_valid_float(prompt):
         except ValueError:
             print("Invalid input, please enter a valid number.\n")
 
-
 def get_valid_string(prompt):
+    if prompt and not prompt.strip()[-1] == ":":
+        prompt = prompt.strip() + ": "
+
     while True:
         value = input(prompt).strip()
 
@@ -42,6 +44,19 @@ def get_valid_string(prompt):
             return value
         else:
             print("Invalid input, the string cannot be empty.\n")
+
+def get_valid_y_n(prompt):
+    if prompt:
+        prompt=prompt.strip()+" (Y/n): "
+    value = get_valid_string(prompt)
+
+    while True:
+        if value.lower() not in ['n','y']:
+            value = get_valid_string("Y/n? ")
+        else:
+            break
+
+    return value.lower() == 'y'
 
 #### Logic functions ####
 
