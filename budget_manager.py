@@ -7,7 +7,6 @@ budget_data = { "balance": 0,
 }
 }
 
-
 # Budget Manager
 # 1. Add Income
 # 2. Add Expense
@@ -34,15 +33,9 @@ while user_input != 5:
             #
             ### add_expense(budget_data)
         case 3:
-            pass
-            ### show balance
-            #
-            ### show_balance(budget_data)
+            show_balance(budget_data)
         case 4:
-            pass
-            ### Show transaction history
-            #
-            ### show_transaction_history(budget_data)
+            show_transaction_history(budget_data)
         case _:
             print("How did you get here????")
 
