@@ -1,17 +1,34 @@
-# This is Yoni's version of the exercise
+# Budget Manager
 
-Now, Here's the deal.
-This code's data structure is as follows:
+## Intruduction
 
-budget_data = {</br>
- "balance": 300,</br>
- "transactions": {</br>
-    "income": [(1000, "Salary), (500, "Rent")],</br>
-    "expense": [(200, "Drugs"), (300, "Sex"), (4000, "Rock n' Roll")]</br>
- }</br>
+Hi! I am Yoni and I am a student at the Technion's DevOps Professional Course.
+This is schoolwork!
+
+The system will add a log of incomes and expenses.
+
+### Data source format
+
+```
+budget_data = {
+    "balance": 300,
+    "transactions": {
+        "income": [(1000, "Salary), (500, "Rent")],
+        "expense": [(200, "Drugs"), (300, "Sex"), (4000, "Rock n' Roll")]
+    }
 }
+```
 
-Please don't break it.
+### Modules
 
+#### Add income
+* Allow multiple incomes to be added
+* Calculate the balance
 
-SEE YAAAAA
+#### Add expense
+* Allow multiple expenses to be added
+* Calculate the balance
+
+#### Show the balance
+
+#### Show transaction log
