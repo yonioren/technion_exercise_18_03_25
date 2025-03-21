@@ -1,5 +1,5 @@
 ### Interactive functions ###
-def get_valid_option(options, prompt):
+def get_valid_option(options, prompt=None):
     while True:
         try:
             if prompt:
@@ -91,11 +91,18 @@ def get_valid_y_n(prompt):
 ## Do not return anything
 #
 
-# def show_balance(budget_data:dict):
+def show_balance(budget_data:dict):
+    print (f"The current budget is {budget_data["balance"]}")
 
 #
 ## Print the transaction history of the budget
 ## Separate to incomes and expenses
 #
 
-# def show_transaction_history(budget_data:dict):
+def show_transaction_history(budget_data:dict):
+    for aspect in ["income", "expense"]:
+        aspect_data = budget_data["transactions"][aspect]
+        if len(aspect_data) > 0:
+            print(aspect.upper())
+            for transaction in aspect_data:
+                print(f"\tAmount : {transaction[0]}\t\tComment : {transaction[1]}")
