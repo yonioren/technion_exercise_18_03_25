@@ -1,116 +1,157 @@
-### Interactive functions ###
-def get_valid_option(options, prompt=None):
-    while True:
-        try:
-            if prompt:
-                print(prompt)
+# Helper function to create the response and add Content-Length header
+def create_response(content, start_response):
+    content_bytes = content.encode('utf-8')  # Ensure content is encoded as byte string
+    content_length = str(len(content_bytes))  # Get length of byte content
 
-            for idx, option in enumerate(options, start=1):
-                print(f"{idx}. {option}")
+    # Headers for the response
+    status = '200 OK'
+    headers = [
+        ('Content-type', 'text/html; charset=utf-8'),
+        ('Content-Length', content_length)
+    ]
 
-            # Get user input
-            selection=int(input(f"Please select an option (1-{len(options)}): "))
+    # Start the response
+    start_response(status, headers)
 
-            if 1 <= selection <= len(options):
-                return selection
-            else:
-                print("Invalid selection, please choose a valid number from the list.\n")
-        except ValueError:
-            print("Invalid input, please enter a valid number.\n")
+    # Return the content in byte format
+    return [content_bytes]
 
+# Helper function to return error messages
+def return_error(message, start_response):
+    return create_response(message, start_response)
 
-def get_valid_float(prompt):
-    while True:
-        try:
-            if prompt and not prompt.strip()[-1] == ":":
-                prompt=prompt.strip()+": "
-            value = float(input(prompt))
+# Helper function to show balance page
+def show_balance_page(data, start_response):
+    response_html = f"<center><h1>Current Balance: {str(data['balance'])}</h1>"
+    response_html += '<a href="/">Back to Main Menu</a></center>'
+    return create_response(response_html, start_response)
 
-            if value > 0:
-                return value
-            else:
-                print("Please enter a value greater than 0.\n")
-        except ValueError:
-            print("Invalid input, please enter a valid number.\n")
+# Helper function to show transaction history
+def show_history_page(data, start_response):
+    history_html = "<center><h2>Transaction History:</h2>"
+    for transaction_type in data['transactions']:
+        if data['transactions'][transaction_type]:
+            history_html += f"<h4>{transaction_type.upper()}:</h4><ul>"
+            for transaction in data['transactions'][transaction_type]:
+                history_html += f"<li>Sum:\t{transaction[0]}\t\t\t\tComment:\t{transaction[1]}</li>"
+            history_html += "</ul>"
+    history_html += '<a href="/">Back to Main Menu</a></center>'
+    return create_response(history_html, start_response)
 
-def get_valid_string(prompt):
-    if prompt and not prompt.strip()[-1] == ":":
-        prompt = prompt.strip() + ": "
+# Helper function to return a form for adding income
+def get_add_income_form(start_response):
+    return create_response('''
+        <center><h2>Add Income</h2>
+        <form method="post">
+            <label for="income">Amount: </label>
+            <input type="text" id="income" name="income"><br><br>
+            <label for="comment">Comment: </label>
+            <input type="text" id="comment" name="comment"><br><br>
+            <input type="submit" value="Submit">
+        </form></center>
+        <script>
+            function validateIncomeForm() {
+                var income = document.getElementById("income").value;
+                var comment = document.getElementById("comment").value;
 
-    while True:
-        value = input(prompt).strip()
+                // Validate amount (should be a positive number)
+                if (isNaN(income) || income <= 0) {
+                    alert("Please enter a valid income amount (positive number).");
+                    return false;
+                }
 
-        if value:
-            return value
-        else:
-            print("Invalid input, the string cannot be empty.\n")
+                // Validate comment (should not be empty)
+                if (comment.trim() === "") {
+                    alert("Comment cannot be empty.");
+                    return false;
+                }
 
-def get_valid_y_n(prompt):
-    if prompt:
-        prompt=prompt.strip()+" (Y/n): "
-    value = get_valid_string(prompt)
+                return true;
+            }
+        </script>
+    ''', start_response)
 
-    while True:
-        if value.lower() not in ['n','y']:
-            value = get_valid_string("Y/n? ")
-        else:
-            break
+# Helper function to return a form for adding expense
+def get_add_expense_form(start_response):
+    return create_response('''
+        <center><h2>Add Expense</h2>
+        <form method="post">
+            <label for="expense">Amount: </label>
+            <input type="text" id="expense" name="expense"><br><br>
+            <label for="comment">Comment: </label>
+            <input type="text" id="comment" name="comment"><br><br>
+            <input type="submit" value="Submit">
+        </form></center>
+        <script>
+            function validateIncomeForm() {
+                var income = document.getElementById("expense").value;
+                var comment = document.getElementById("comment").value;
 
-    return value.lower() == 'y'
+                // Validate amount (should be a positive number)
+                if (isNaN(expense) || income <= 0) {
+                    alert("Please enter a valid expense amount (positive number).");
+                    return false;
+                }
 
-#### Logic functions ####
+                // Validate comment (should not be empty)
+                if (comment.trim() === "") {
+                    alert("Comment cannot be empty.");
+                    return false;
+                }
 
-#
-## Add income to the budget.
-## Allow multiple additions.
-## Recalculate balance
-## Return the budget after additions
-#
+                return true;
+            }
+        </script>
+    ''', start_response)  # Ensure the HTML is returned as a byte string
 
-def add_income(budget_data:dict):
-    while True:
-        sum = get_valid_float("Please insert the sum of the income")
-        comment = get_valid_string("Please insert a comment for the income")
-        new_budget=budget_data.copy()
-        new_budget["transactions"]["income"].append((sum,comment))
-        new_budget["balance"]+=sum
-        if not get_valid_y_n("Would you like to insert another income"):
-            return new_budget
+# Helper function to return the main action form
+def get_form(start_response):
+    return create_response('''
+        <center><h1>Budget Manager</h1>
+        <form method="post">
+            <label for="action">Choose an action:</label><br>
+            <select name="action" id="action">
+                <option value="add_income">Add Income</option>
+                <option value="add_expense">Add Expense</option>
+                <option value="show_balance">Show Balance</option>
+                <option value="show_history">Show History</option>
+            </select><br><br>
+            <input type="submit" value="Submit">
+        </form></center>
+    ''', start_response)  # Ensure the HTML is returned as a byte string
 
-#
-## Add expense to the budget.
-## Allow multiple expenses.
-## Recalculate balance.
-## Return the budget after expenses.
-#
+def add_income(form_data, budget_data, start_response):
+    try:
+        amount = float(form_data['income'][0])
+        if amount <= 0:
+            return None,return_error("Invalid income amount. It should be positive.", start_response)
+    except ValueError:
+        return None,return_error("Invalid income amount. Please enter a valid number.", start_response)
 
-def add_expense(budget_data:dict):
-    while True:
-        sum = get_valid_float("Please insert the sum of the expense")
-        comment = get_valid_string("Please insert a comment for the expense")
-        new_budget = budget_data.copy()
-        new_budget["transactions"]["expense"].append((sum, comment))
-        new_budget["balance"] -= sum
-        if not get_valid_y_n("Would you like to insert another expense"):
-            return new_budget
+    comment = form_data['comment'][0]
+    if not comment.strip():
+        return None,return_error("Comment cannot be empty.", start_response)
 
-#
-## Print the balance of the budget
-## Do not return anything
-#
+    new_budget_data=budget_data.copy()
 
-def show_balance(budget_data:dict):
-    print (f"The current budget is {budget_data['balance']}")
+    new_budget_data['transactions']['incomes'].append((amount, comment))
+    new_budget_data['balance'] += amount
+    return new_budget_data, get_form(start_response)
 
-#
-## Print the transaction history of the budget
-## Separate to incomes and expenses
-#
+def add_expense(form_data, budget_data, start_response):
+    try:
+        amount = float(form_data['expense'][0])
+        if amount <= 0:
+            return None,return_error("Invalid expense amount. It should be positive.", start_response)
+    except ValueError:
+        return None,return_error("Invalid expense amount. Please enter a valid number.", start_response)
 
-def show_transaction_history(budget_data:dict):
-    for aspect in ["income", "expense"]:
-        aspect_data = budget_data["transactions"][aspect]
-        if len(aspect_data) > 0:
-            print(aspect.upper())
-            for transaction in aspect_data:
-                print(f"\tAmount : {transaction[0]}\t\tComment : {transaction[1]}")
+    comment = form_data['comment'][0]
+    if not comment.strip():
+        return None,return_error("Comment cannot be empty.", start_response)
+
+    new_budget_data=budget_data.copy()
+
+    new_budget_data['transactions']['expenses'].append((amount, comment))
+    new_budget_data['balance'] -= amount
+    return new_budget_data, get_form(start_response)

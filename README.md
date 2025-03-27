@@ -32,3 +32,17 @@ budget_data = {
 #### Show the balance
 
 #### Show transaction log
+
+## Web version
+
+Using WSGI this branch is able to bring you a Web version of the system.
+
+### Deployment steps
+
+1. Please Directory.conf in your APACHE site-available path
+2. create /var/www/py and place the rest of the files there
+3. Change ownership and permissions to www-data:www-date 775.
+4. a2enmod wsgi
+5. apache2ctl restart
+6. open a browser and enjoy
+
