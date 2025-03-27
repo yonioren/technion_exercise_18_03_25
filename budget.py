@@ -67,11 +67,15 @@ def get_valid_y_n(prompt):
 ## Return the budget after additions
 #
 
-# def add_income(budget_data:dict):
-    # sum = get_valid_float("Please insert the sum to add")
-    # comment = get_valid_string("Please insert a comment for the income")
-    # ???
-    # return new_budget_data
+def add_income(budget_data:dict):
+    while True:
+        sum = get_valid_float("Please insert the sum of the income")
+        comment = get_valid_string("Please insert a comment for the income")
+        new_budget=budget_data.copy()
+        new_budget["transactions"]["income"].append((sum,comment))
+        new_budget["balance"]+=sum
+        if not get_valid_y_n("Would you like to insert another income"):
+            return new_budget
 
 #
 ## Add expense to the budget.
@@ -80,11 +84,15 @@ def get_valid_y_n(prompt):
 ## Return the budget after expenses.
 #
 
-# def add_expense(budget_data:dict):
-    # sum = get_valid_float("Please insert the sum to reduce")
-    # comment = get_valid_string("Please insert a comment for the expense")
-    # ???
-    # return new_budget_data
+def add_expense(budget_data:dict):
+    while True:
+        sum = get_valid_float("Please insert the sum of the expense")
+        comment = get_valid_string("Please insert a comment for the expense")
+        new_budget = budget_data.copy()
+        new_budget["transactions"]["expense"].append((sum, comment))
+        new_budget["balance"] -= sum
+        if not get_valid_y_n("Would you like to insert another expense"):
+            return new_budget
 
 #
 ## Print the balance of the budget
@@ -92,7 +100,7 @@ def get_valid_y_n(prompt):
 #
 
 def show_balance(budget_data:dict):
-    print (f"The current budget is {budget_data["balance"]}")
+    print (f"The current budget is {budget_data['balance']}")
 
 #
 ## Print the transaction history of the budget

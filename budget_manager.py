@@ -25,13 +25,9 @@ user_input=get_valid_option(["Add Income",
 while user_input != 5:
     match (user_input):
         case 1:
-            pass
-            #
-            ### add_income(budget_data)
+            budget_data=add_income(budget_data)
         case 2:
-            pass
-            #
-            ### add_expense(budget_data)
+            budget_data=add_expense(budget_data)
         case 3:
             show_balance(budget_data)
         case 4:
