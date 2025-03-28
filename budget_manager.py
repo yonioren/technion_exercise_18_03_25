@@ -1,4 +1,3 @@
-from types import new_class
 from urllib.parse import parse_qs
 from budget import *
 
